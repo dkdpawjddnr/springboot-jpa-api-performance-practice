@@ -1,7 +1,13 @@
 package jpabook_web1_inf.jpashop_web1_inf.api;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jpabook_web1_inf.jpashop_web1_inf.domain.Member;
 import jpabook_web1_inf.jpashop_web1_inf.service.MemberService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -9,4 +15,36 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberApiController {
 
     private final MemberService memberService;
+
+    // 엔티티를 RequestBody에 직접 매핑
+    @PostMapping("/api/v1/members")
+    public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member){
+        Long id = memberService.join(member);
+        return new CreateMemberResponse(id);
+    }
+
+    // 엔티티 대신에 DTO를 RequestBody에 매핑
+    @PostMapping("/api/v2/members")
+    public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request){
+        Member member = new Member();
+        member.setName(request.getName());
+
+        Long id = memberService.join(member);
+        return new CreateMemberResponse(id);
+    }
+
+    @Data
+    static class CreateMemberRequest{
+        @NotEmpty
+        private String name;
+    }
+
+    @Data
+    static class CreateMemberResponse {
+        private Long id;
+
+        public CreateMemberResponse(Long id){
+            this.id = id;
+        }
+    }
 }
