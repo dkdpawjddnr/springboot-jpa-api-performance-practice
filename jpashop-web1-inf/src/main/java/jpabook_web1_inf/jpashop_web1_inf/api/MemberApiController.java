@@ -32,7 +32,8 @@ public class MemberApiController {
         return new CreateMemberResponse(id);
     }
 
-    @PutMapping("/api/v2/members/{id}")
+    // 수정 API (부분 업데이트는 PATCH or POST) 사용
+    @PatchMapping("/api/v2/members/{id}")
     public UpdateMemberResponse updateMemberV2(
             @PathVariable("id") Long id,
             @RequestBody @Valid UpdateMemberRequest request){
