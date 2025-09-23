@@ -18,7 +18,7 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    // v1의 문제점 엔타타의 모든 값이 노출이 됨.
+    // v1의 문제점 엔티티의 모든 값이 노출이 됨.
     // 엔티티가 변경되면 API 스펙이 변한다.
     @GetMapping("/api/v1/members")
     public List<Member> membersV1() {
