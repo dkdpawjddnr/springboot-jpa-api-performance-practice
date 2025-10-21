@@ -1,5 +1,6 @@
 package jpabook_web1_inf.jpashop_web1_inf.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Member {
     @Embedded
     private Address address;
 
+    @JsonIgnore // 양방향 연결관계 해결위해 사용
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 }
