@@ -36,7 +36,7 @@ public class OrderSimpleApiController {
         return all;
     }
 
-    @GetMapping("api/v2/simple-orders")
+    @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> orderV2(){
         // ORDER -> SQL 1번 -> 결과 : 주문수 2개
         // 1번 쿼리 결과로 추가로 2번 쿼리가 나가게됨 회원 N + 배송 N
@@ -47,6 +47,17 @@ public class OrderSimpleApiController {
         // 첫 번째 루프가 돌 때, LAZY가 걸려있는 member, delivery
         // 두 번째 루프가 돌 때 또 LAZY 걸려있는 member, delivery 초기화 되야됨.
         // 총 쿼리가 5번 나가게 됨.
+        List<SimpleOrderDto> result = orders.stream()
+                .map(o -> new SimpleOrderDto(o))
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
+    // v2랑 결과는 똑같지만, 쿼리는 다르다.
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> orderVs3(){
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
         List<SimpleOrderDto> result = orders.stream()
                 .map(o -> new SimpleOrderDto(o))
                 .collect(Collectors.toList());
