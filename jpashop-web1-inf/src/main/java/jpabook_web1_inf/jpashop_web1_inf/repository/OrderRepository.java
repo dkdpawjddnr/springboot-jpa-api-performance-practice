@@ -5,8 +5,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jpabook_web1_inf.jpashop_web1_inf.domain.Member;
 import jpabook_web1_inf.jpashop_web1_inf.domain.Order;
-import jpabook_web1_inf.jpashop_web1_inf.domain.OrderStatus;
-import jpabook_web1_inf.jpashop_web1_inf.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;

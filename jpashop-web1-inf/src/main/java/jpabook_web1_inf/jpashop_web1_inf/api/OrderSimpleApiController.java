@@ -5,6 +5,8 @@ import jpabook_web1_inf.jpashop_web1_inf.domain.Order;
 import jpabook_web1_inf.jpashop_web1_inf.domain.OrderStatus;
 import jpabook_web1_inf.jpashop_web1_inf.repository.OrderRepository;
 import jpabook_web1_inf.jpashop_web1_inf.repository.OrderSearch;
+import jpabook_web1_inf.jpashop_web1_inf.repository.order.simplequery.OrderSimpleQueryDto;
+import jpabook_web1_inf.jpashop_web1_inf.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1(){
@@ -56,13 +59,18 @@ public class OrderSimpleApiController {
 
     // v2랑 결과는 똑같지만, 쿼리는 다르다.
     @GetMapping("/api/v3/simple-orders")
-    public List<SimpleOrderDto> orderVs3(){
+    public List<SimpleOrderDto> ordersV3(){
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
         List<SimpleOrderDto> result = orders.stream()
                 .map(o -> new SimpleOrderDto(o))
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4(){
+        return orderSimpleQueryRepository.findOrderDtos();
     }
 
     @Data
