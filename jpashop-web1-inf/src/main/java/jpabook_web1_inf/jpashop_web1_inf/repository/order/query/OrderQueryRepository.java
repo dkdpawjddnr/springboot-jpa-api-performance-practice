@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,14 +16,53 @@ public class OrderQueryRepository {
 
     public List<OrderQueryDto> findOrderQueryDtos(){
         //루트 조회(toOne 코드를 모두 한번에 조회)
-        List<OrderQueryDto> result = findOrders();
+        List<OrderQueryDto> result = findOrders(); //query 1번 -> 2개(N개)
 
         //루프를 돌면서 컬렉션 추가(추가 쿼리 실행)
         result.forEach(o -> {
-            List<OrderItemQueryDto> orderItems = findOrderItems(o.getOrderId());
+            List<OrderItemQueryDto> orderItems = findOrderItems(o.getOrderId()); //Query 2번(N번)
             o.setOrderItems(orderItems);
         });
         return result;
+    }
+
+    /**
+     * 최적화
+     * Query: 루트 1번, 컬렉션 1번
+     * 데이터를 한꺼번에 처리할 때 많이 사용하는 방식
+     *
+     */
+    public List<OrderQueryDto> findAllByDto_optimization() {
+        List<OrderQueryDto> result = findOrders(); //query 1번
+
+        List<Long> orderIds = toOrderIds(result);
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = findOrderItemMap(toOrderIds(result));
+
+        result.forEach(o -> o.setOrderItems(orderItemMap.get(o.getOrderId())));
+
+        return result;
+    }
+
+    private Map<Long, List<OrderItemQueryDto>> findOrderItemMap(List<Long> orderIds) {
+        List<OrderItemQueryDto> orderItems = em.createQuery( //query 1번
+                        "select new jpabook_web1_inf.jpashop_web1_inf.repository.order.query.OrderItemQueryDto(oi.order.id, i.name, oi.orderPrice, oi.count)" +
+                                " from OrderItem oi" +
+                                " join oi.item i" +
+                                " where oi.order.id in :orderIds", OrderItemQueryDto.class)
+                .setParameter("orderIds", orderIds)
+                .getResultList();
+
+        // OrderId(Key)를 기준으로 Map으로 바꿀 수 있다.(메모리에서 작업함)
+        Map<Long, List<OrderItemQueryDto>> orderItemMap = orderItems.stream()
+                .collect(Collectors.groupingBy(orderItemQueryDto -> orderItemQueryDto.getOrderId()));
+        return orderItemMap;
+    }
+
+    private static List<Long> toOrderIds(List<OrderQueryDto> result) {
+        List<Long> orderIds = result.stream()
+                .map(o -> o.getOrderId())
+                .collect(Collectors.toList());
+        return orderIds;
     }
 
     /**
