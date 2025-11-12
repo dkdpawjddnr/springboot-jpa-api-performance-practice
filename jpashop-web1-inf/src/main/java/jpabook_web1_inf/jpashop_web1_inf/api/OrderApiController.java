@@ -10,6 +10,8 @@ import jpabook_web1_inf.jpashop_web1_inf.repository.order.query.OrderFlatDto;
 import jpabook_web1_inf.jpashop_web1_inf.repository.order.query.OrderItemQueryDto;
 import jpabook_web1_inf.jpashop_web1_inf.repository.order.query.OrderQueryDto;
 import jpabook_web1_inf.jpashop_web1_inf.repository.order.query.OrderQueryRepository;
+import jpabook_web1_inf.jpashop_web1_inf.service.query.OrderDto;
+import jpabook_web1_inf.jpashop_web1_inf.service.query.OrderQueryService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +54,15 @@ public class OrderApiController {
         return result;
     }
 
+    private final OrderQueryService orderQueryService;
+    
+    // OSIV OFF시 커멘트와 쿼리를 분리
     @GetMapping("/api/v3/orders")
+    public List<jpabook_web1_inf.jpashop_web1_inf.service.query.OrderDto> ordersv3() {
+        return orderQueryService.ordersV3();
+    }
+    
+    /*
     public List<OrderDto> ordersv3() {
         List<Order> orders = orderRepository.findAllWithItem();
         List<OrderDto> result = orders.stream()
@@ -60,7 +70,7 @@ public class OrderApiController {
                 .collect(toList());
         return result;
     }
-
+     */
     @GetMapping("/api/v3.1/orders")
     public List<OrderDto> ordersV3_page(@RequestParam(value = "offset", defaultValue = "0") int offset,
                                         @RequestParam(value = "limit", defaultValue = "100") int limit) {
