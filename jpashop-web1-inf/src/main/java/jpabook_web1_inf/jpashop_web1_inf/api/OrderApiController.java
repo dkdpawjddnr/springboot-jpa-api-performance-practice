@@ -61,7 +61,8 @@ public class OrderApiController {
     public List<jpabook_web1_inf.jpashop_web1_inf.service.query.OrderDto> ordersv3() {
         return orderQueryService.ordersV3();
     }
-    
+
+    // 원상복구 시키기
     /*
     public List<OrderDto> ordersv3() {
         List<Order> orders = orderRepository.findAllWithItem();
